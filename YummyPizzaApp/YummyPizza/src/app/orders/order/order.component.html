@@ -1,0 +1,212 @@
+<form #form="ngForm" autocomplete="off" *ngIf="Orderservice.pizzaData" (submit)="onSubmit(form)">
+
+    <div class="flex">
+        <h1>Begin New Order</h1>
+    </div>
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group">
+                <label id="onumberl">Order Number:</label>                
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div id="onumberad" class="input-group-text">#</div>
+                    </div>
+                    <input id="onumberi" name="OrderNo" #OrderNo="ngModel" [(ngModel)]="Orderservice.orderData.Order_No" class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="text-center lbl" id="ostatusl">Order Status</label>                
+                <div class="input-group">
+                    <input id="ostatusi" name="orderStatus" #orderStatus="ngModel" [(ngModel)]="Orderservice.orderData.Status" 
+                        class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-md-6">
+            <div class="form-group">
+                <label id="otypel">Order Type</label>
+                <select id="sotype" name="OrderTypeID" #OrderTypeID="ngModel" 
+                        [(ngModel)]="Orderservice.orderData.Order_Type_ID" class="form-control"
+                        (change)="selectOrderType($event.target)" [class.is-invalid]="!isValid && Orderservice.orderData.Order_Type_ID==0">
+                    <option value="0">-- Select --</option>
+                    <option *ngFor="let item of odTypeList" value="{{item.Order_Type_ID}}">{{item.Order_Type1}}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="text-center lbl" id="odatel">Order Date</label>                
+                <div class="input-group">
+                    <input id="odatei" name="OrderDate" #OrderDate="ngModel" [(ngModel)]="Orderservice.orderData.Order_Date" 
+                        class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-md-6">
+            <div class="form-group">
+                <label id="ototall">Order Total:</label>                
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <div id="ototalad" class="input-group-text">R</div>
+                    </div>
+                    <input id="ototali" name="OTotal" #OTotal="ngModel" [(ngModel)]="Orderservice.orderData.OTotal" class="form-control" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <div class="form-group flex">
+        <a class="btn btn-lg btn-success text-white" (click)="startNewOrder()"><i class="fa fa-plus"></i> Make Payment</a>
+    </div>
+    <br>
+
+    <!-- Order Table -->
+    <h1 class="h flex">Current Orders</h1>
+    <table class="table table-borderless">
+        <thead class="thead-light" *ngIf="Orderservice.itemList.length>0">
+          <th>Item</th>
+          <th>Price</th>
+          <th>Quantity</th>
+          <th>Total</th>
+          <th>
+            <!-- <a class="btn btn-sm btn-success text-white" (click)="startNewOrder()"><i class="fa fa-plus"></i> Make Payment</a> -->
+          </th>
+        </thead>
+        <tbody>
+          <tr *ngIf="Orderservice.itemList.length==0" [class.text-danger]="!isValid && Orderservice.itemList.length==0">
+            <td class="font-italic text-center" colspan="5">
+              No food item selected for this order please select items below. <i class="fa fa-level-down"></i>
+            </td>
+          </tr>
+    
+          <tr *ngFor="let item of Orderservice.itemList;let i=index;">
+            <td>{{item.Item}}</td>
+            <td>{{item.Price}}</td>
+            <td>{{item.Quantity}}</td>
+            <td>{{item.Total}}</td>
+            <td>
+              <!-- <a class="btn btn-sm btn-info text-white" (click)="AddOrEditOrderItem(i,service.formData.OrderID)"><i class="fa fa-pencil"></i></a> -->
+              <a class="btn btn-sm btn-danger text-white ml-1" (click)="onDeleteOrderItem(i)" style="text-align: center;"><i class="fa fa-trash"></i></a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>    
+
+    <!-- Pizza Table -->
+    <h1 class="h flex">Available Pizzas</h1>
+    <table class="table table-boarderless" id="tpizza">
+        <thead class="thead-light">
+            <tr>
+                <th>Flavour</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+      <tbody>
+        <tr *ngFor="let item of pizzaList; let i=index;">
+            <td>{{ item.Pizza_Name }}</td>
+            <td>{{ item.Pizza_Desc }}</td>
+            <td>R{{ item.Price }}</td>
+            <td>
+                <a (click)="CreatePizzaOrder(i)" class="btn btn-sm btn-success text-white"><i class="fa fa-plus"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Extra Table -->
+    <h1 class="h flex">Available Extras</h1>
+    <table class="table table-boarderless" id="textra">
+        <thead class="thead-light">
+            <tr>
+                <th>Extra</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+      <tbody>
+        <tr *ngFor="let item of extraList; let k=index;">
+            <td>{{ item.Extra_Name }}</td>
+            <td>R{{ item.Price }}</td>
+            <td>
+                <a (click)="AddExtraToOrder(k, Orderservice.orderData.Order_ID)" class="btn btn-sm btn-success text-white"><i class="fa fa-plus"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Combo Table -->
+    <h1 class="h flex">Available Comboes</h1>
+    <table class="table table-boarderless" id="tcombo">
+        <thead class="thead-light">
+            <tr>
+                <th>Combo</th>
+                <th>Price</th>
+                <th>Pizza</th>
+                <th>Size</th>
+                <th>Base</th>
+                <th>Extra</th>
+                <th></th>
+            </tr>
+        </thead>
+      <tbody>
+        <!-- <tr *ngIf="comboList.length==0">
+            <td class="font-italic text-center" colspan="5">
+            No Available Comboes.
+            </td>
+        </tr>  -->
+        <tr *ngFor="let item of comboList; let l=index;">
+            <td>{{ item.Combo_Name }}</td>
+            <td>R{{ item.Combo_Price }}</td>
+            <td>{{ item.Pizza_Name }}</td>
+            <td>{{ item.Size_Desc }}</td>
+            <td>{{ item.Base_Type }}</td>
+            <td>{{ item.Extra_Name }}</td>
+            <td>
+                <a (click)="AddComboToOrder(l, Orderservice.orderData.Order_ID)" class="btn btn-sm btn-success text-white"><i class="fa fa-plus"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <div class="form-group flex">
+        <a class="btn btn-lg btn-dark text-white" (click)="backToEmployee()">Add Employee</a>
+    </div>
+</form>
+
+<!-- Topping Table
+    <table class="table table-boarderless" id="ttopping">
+        <thead class="thead-light">
+            <tr>
+                <th>Topping</th>
+                <th>Price</th>
+                <th></th>
+            </tr>
+        </thead>
+      <tbody>
+        <tr *ngFor="let item of toppingList; let j=index;">
+            <td>{{ item.Topping_Name }}</td>
+            <td>R{{ item.Price }}</td>
+            <td>
+                <a (click)="AddToppingToOrder(j, Orderservice.orderData.Order_ID)" class="btn btn-sm btn-success text-white"><i class="fa fa-plus"></i></a>
+            </td>
+        </tr>
+        </tbody>
+    </table> -->

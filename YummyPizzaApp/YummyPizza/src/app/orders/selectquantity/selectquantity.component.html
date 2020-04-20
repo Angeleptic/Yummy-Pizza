@@ -1,0 +1,22 @@
+<div class="lbl">
+    <h3 class="pizzaName">Please select quantity for order</h3>
+    <br>
+    <select id="qtys" class="form-control" (change)="updateQuantity()"
+            [class.is-invalid]="!isValid && oService.quantity==0">
+        <option value="0">0</option>
+        <option *ngFor="let item of numbers" value="{{item.value}}">{{item.viewValue}}</option>
+    </select>
+</div>
+
+<br>
+
+<div class="form-group lbl">
+  <button class="btn btn-sm btn-primary text-white" (click)="saveQuantity()">
+          <i class="fa fa-magic"></i> Save Quantity
+  </button>
+</div>
+<div class="form-group lbl">
+  <button type="button" class="btn btn-outline-dark ml-1" 
+          [mat-dialog-close]><i class="fa fa-close" ></i> Close
+  </button>
+</div>
